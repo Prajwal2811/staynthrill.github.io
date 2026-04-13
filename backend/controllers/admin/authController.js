@@ -29,21 +29,21 @@ exports.login = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized role access" });
     }
 
-    // ✅ Token
+    // ✅ Step 4: Token
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
+    // ✅ Step 5: Send response in frontend-friendly format
     res.json({
       message: "Login success",
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
+      token,                 // for API calls
+      role: user.role,        // for ProtectedRoute
+      adminUser: {            // for UserDropdown
+        name: user.firstName,
         email: user.email,
-        role: user.role,
       },
     });
 

@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const Admin = require("./models/admin/Admin");
 require("dotenv").config();
 
-// Connect to MongoDB (Mongoose 7+ doesn't need extra options)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -17,9 +16,9 @@ const seedAdmins = async () => {
     await Admin.insertMany([
       {
         adminId: "ADM001",
-        firstName: "Super",
-        lastName: "Admin",
-        email: "superadmin@gmail.com",
+        firstName: "Prajwal",
+        lastName: "Ingole",
+        email: "superadmin@gmail.com", // change if needed
         phoneNumber: "9876543210",
         password: hashedPassword,
         role: "super_admin",
@@ -29,9 +28,9 @@ const seedAdmins = async () => {
       },
       {
         adminId: "ADM002",
-        firstName: "Operations",
-        lastName: "Admin",
-        email: "operations@gmail.com",
+        firstName: "Priya",
+        lastName: "S",
+        email: "priya@gmail.com",
         phoneNumber: "9876543211",
         password: hashedPassword,
         role: "operations_admin",
@@ -41,9 +40,9 @@ const seedAdmins = async () => {
       },
       {
         adminId: "ADM003",
-        firstName: "Finance",
-        lastName: "Admin",
-        email: "finance@gmail.com",
+        firstName: "Astha",
+        lastName: "M",
+        email: "astha@gmail.com",
         phoneNumber: "9876543212",
         password: hashedPassword,
         role: "financial_admin",
@@ -53,9 +52,9 @@ const seedAdmins = async () => {
       },
       {
         adminId: "ADM004",
-        firstName: "Support",
-        lastName: "Admin",
-        email: "support@gmail.com",
+        firstName: "Hemchandra",
+        lastName: "N",
+        email: "hemchandra@gmail.com",
         phoneNumber: "9876543213",
         password: hashedPassword,
         role: "support_admin",

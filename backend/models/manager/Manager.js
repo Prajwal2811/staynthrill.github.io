@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const vendorSchema = new mongoose.Schema(
+const managerSchema = new mongoose.Schema(
   {
-    vendorId: {
+    managerId: {
       type: String,
       required: true,
       unique: true,
@@ -39,30 +39,31 @@ const vendorSchema = new mongoose.Schema(
       required: true,
     },
 
-    businessName: {
+    // 🔥 PROPERTY TYPE
+    propertyType: {
       type: String,
+      enum: ["single_property_owner", "multiple_property_owner"],
       required: true,
     },
 
+    // 🔥 GST NUMBER
     gstNumber: {
       type: String,
+      trim: true,
     },
 
-    address: {
+    // 🔥 REVIEW STATUS (ADMIN CONTROL)
+    review_status: {
       type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
 
-    role: {
+    // 🔥 ADMIN COMMENT
+    admin_review_comment: {
       type: String,
-      enum: ["hotel_vendor", "adventure_vendor"],
-      required: true,
-    },
-
-    // 🔥 RELATION FIELD (MOST IMPORTANT)
-    manager: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Manager",
-      required: true,
+      default: "",
+      trim: true,
     },
 
     status: {
@@ -75,26 +76,10 @@ const vendorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
-    note: {
-      type: String,
-      default: "",
-    },
-
-    review_status: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-
-    admin_review_comment: {
-      type: String,
-      default: "",
-    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("Vendor", vendorSchema);
+module.exports = mongoose.model("Manager", managerSchema);

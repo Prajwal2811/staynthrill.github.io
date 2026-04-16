@@ -5,19 +5,20 @@ require("dotenv").config();
 
 const reviewStatuses = ["pending", "approved", "rejected"];
 
-// Helper to pick random review status
+// Helper
 const getRandomStatus = () =>
   reviewStatuses[Math.floor(Math.random() * reviewStatuses.length)];
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
 const seedUsers = async () => {
   try {
+    // ✅ Connect DB
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
+    // ✅ Clear old users
     await User.deleteMany();
 
+    // ✅ Hash password once
     const hashedPassword = await bcrypt.hash("user123", 10);
 
     const users = [
@@ -33,19 +34,31 @@ const seedUsers = async () => {
       { userId: "USR010", firstName: "Riya", lastName: "Shah", email: "riya@yopmail.com", phoneNumber: "9000100010", status: "active", is_deleted: true },
     ];
 
-    const usersWithStatus = users.map(u => ({
+    // ✅ Add extra fields
+    const usersWithExtras = users.map(u => ({
       ...u,
       password: hashedPassword,
       review_status: getRandomStatus(),
-      admin_review_comment: ""
+      admin_review_comment: "",
+
+      // ✅ IMPORTANT (OTP fields)
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
     }));
 
-    await User.insertMany(usersWithStatus);
+    await User.insertMany(usersWithExtras);
 
-    console.log("✅ Users Seeded Successfully (No role field)");
-    process.exit();
+    console.log("✅ Users Seeded Successfully");
+
+    // ✅ Proper disconnect
+    await mongoose.disconnect();
+    console.log("MongoDB disconnected");
+
+    process.exit(0);
+
   } catch (err) {
     console.error("❌ Seeding Error:", err);
+    await mongoose.disconnect();
     process.exit(1);
   }
 };

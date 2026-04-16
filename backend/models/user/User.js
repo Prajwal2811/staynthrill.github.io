@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     phoneNumber: { type: String, required: true },
     password: { type: String, required: true },
+
+    // ✅ ADD THESE FIELDS
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
+
     status: { type: String, enum: ["active", "inactive"], default: "active" },
     is_deleted: { type: Boolean, default: false },
     note: { type: String, default: "" },

@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
+app.use("/api/auth/user", require("./routes/client/clientRoutes.js"));
 
 
 app.use("/api/auth", require("./routes/admin/authRoutes"));

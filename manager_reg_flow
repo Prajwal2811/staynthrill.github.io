@@ -1,0 +1,224 @@
+{
+  "manager": {
+    "firstName": "Prajwal",
+    "lastName": "Ingole",
+    "email": "prajwal@example.com",
+    "phoneNumber": "9876543210",
+    "alternatePhone": "9123456780",
+    "password": "yourPassword123",
+    "profileImage": "url",
+    "gender": "male",
+    "companyName": "Buzzberry Stays",
+    "gstNumber": "27ABCDE1234F1Z5",
+    "address": {
+      "street": "Main Road",
+      "city": "Nagpur",
+      "state": "Maharashtra",
+      "country": "India",
+      "pincode": "440001"
+    }
+  },
+
+  "ownership": {
+    "type": "multiple",
+    "propertiesCount": 8,
+    "ownershipProof": "document_url"
+  },
+
+  "vendor": {
+    "isSelfManaged": false,
+    "vendors": [
+      {
+        "vendorId": "V001",
+        "name": "Vendor 1",
+        "email": "vendor1@example.com",
+        "phone": "9999999999",
+        "commissionPercentage": 15,
+        "status": "active"
+      }
+    ]
+  },
+
+  "engines": {
+    "roomBased": {
+      "enabled": true,
+      "properties": [
+        {
+          "propertyId": "RB001",
+          "type": "Hotel",
+          "name": "Hotel Sunshine",
+          "description": "Luxury stay with modern amenities",
+          "starRating": 4,
+          "contactEmail": "hotel@mail.com",
+          "contactPhone": "8888888888",
+
+          "address": {
+            "street": "Main Road",
+            "city": "Nagpur",
+            "state": "Maharashtra",
+            "country": "India",
+            "pincode": "440001",
+            "latitude": 21.1458,
+            "longitude": 79.0882
+          },
+
+          "checkInTime": "12:00",
+          "checkOutTime": "11:00",
+
+          "amenities": [
+            "WiFi",
+            "AC",
+            "Parking",
+            "Restaurant",
+            "Pool",
+            "Gym"
+          ],
+
+          "images": ["img1.jpg", "img2.jpg"],
+          "videos": ["video1.mp4"],
+
+          "policies": {
+            "cancellation": "Free before 24 hrs",
+            "petsAllowed": false,
+            "smokingAllowed": false,
+            "idProofRequired": true
+          },
+
+          "rooms": [
+            {
+              "roomId": "R101",
+              "roomType": "Deluxe",
+              "bedType": "King",
+              "maxAdults": 2,
+              "maxChildren": 1,
+              "totalRooms": 10,
+              "roomSize": "300 sqft",
+              "pricePerNight": 3000,
+              "discount": 10,
+              "taxPercentage": 12,
+              "extraBedPrice": 500,
+              "amenities": ["TV", "AC", "Mini Bar"],
+              "images": ["room1.jpg"],
+
+              "availability": {
+                "startDate": "2026-01-01",
+                "endDate": "2026-12-31",
+                "blockedDates": []
+              }
+            }
+          ],
+
+          "status": "active",
+          "createdAt": "timestamp"
+        },
+
+        {
+          "propertyId": "RB002",
+          "type": "Hostel/Dorm",
+          "name": "Backpackers Hostel",
+          "totalBeds": 100,
+          "pricePerBed": 500,
+          "amenities": ["WiFi", "Locker", "Kitchen"],
+          "genderType": "mixed",
+          "status": "active"
+        },
+
+        {
+          "propertyId": "RB003",
+          "type": "Capsule",
+          "name": "Capsule Stay",
+          "totalCapsules": 40,
+          "pricePerCapsule": 800,
+          "amenities": ["WiFi", "Smart Lock"],
+          "status": "active"
+        }
+      ]
+    },
+
+    "productBased": {
+      "enabled": true,
+      "properties": [
+        {
+          "propertyId": "PB001",
+          "type": "Villa",
+          "name": "Luxury Villa",
+          "description": "Private villa with pool",
+
+          "address": {
+            "city": "Goa",
+            "state": "Goa",
+            "country": "India"
+          },
+
+          "bedrooms": 4,
+          "bathrooms": 4,
+          "maxGuests": 10,
+          "area": "2500 sqft",
+
+          "amenities": [
+            "Private Pool",
+            "Garden",
+            "Parking",
+            "WiFi"
+          ],
+
+          "pricePerNight": 12000,
+          "cleaningFee": 1000,
+          "securityDeposit": 5000,
+          "taxPercentage": 18,
+          "discount": 15,
+
+          "availability": {
+            "calendar": [],
+            "blockedDates": []
+          },
+
+          "policies": {
+            "checkInTime": "13:00",
+            "checkOutTime": "11:00",
+            "petsAllowed": true,
+            "partiesAllowed": false
+          },
+
+          "images": ["villa1.jpg"],
+          "status": "active"
+        },
+
+        {
+          "propertyId": "PB002",
+          "type": "Apartment",
+          "name": "City Apartment",
+          "bhk": "2BHK",
+          "floor": 5,
+          "furnishing": "Fully Furnished",
+          "maxGuests": 5,
+          "pricePerNight": 3000,
+          "amenities": ["Lift", "Parking", "WiFi"],
+          "status": "active"
+        },
+
+        {
+          "propertyId": "PB003",
+          "type": "Farmhouse",
+          "name": "Nature Farmhouse",
+          "landArea": "2 acres",
+          "maxGuests": 15,
+          "pricePerNight": 10000,
+          "amenities": ["Bonfire", "Garden"],
+          "status": "active"
+        },
+
+        {
+          "propertyId": "PB004",
+          "type": "Cottage",
+          "name": "Hill Cottage",
+          "bedrooms": 2,
+          "view": "Mountain",
+          "pricePerNight": 5000,
+          "amenities": ["Fireplace", "WiFi"],
+          "status": "active"
+        }
+      ]
+    }
+  }
+}

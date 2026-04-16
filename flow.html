@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Manager Setup</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #eef2f7, #dfe9f3);
+}
+
+.container {
+  max-width: 1100px;
+}
+
+.card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.section-title {
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+input, select {
+  border-radius: 10px !important;
+}
+
+.btn-primary {
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.add-btn {
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.badge-title {
+  background: #002F6C;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container my-5">
+
+<div class="text-center mb-4">
+<h2>Manager & Property Setup</h2>
+<p class="text-muted">Complete onboarding with premium interface</p>
+</div>
+
+<form>
+
+<!-- Manager -->
+<div class="card p-4 mb-4">
+<div class="d-flex justify-content-between">
+<h5 class="section-title">Manager Details</h5>
+<span class="badge-title">STEP 1</span>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6"><input class="form-control" placeholder="First Name"></div>
+<div class="col-md-6"><input class="form-control" placeholder="Last Name"></div>
+<div class="col-md-6"><input class="form-control" placeholder="Email"></div>
+<div class="col-md-6"><input class="form-control" placeholder="Phone"></div>
+<div class="col-md-6"><input class="form-control" placeholder="Alternate Phone"></div>
+<div class="col-md-6"><input class="form-control" type="password" placeholder="Password"></div>
+<div class="col-md-6"><input class="form-control" placeholder="Company Name"></div>
+<div class="col-md-6"><input class="form-control" placeholder="GST Number"></div>
+</div>
+</div>
+
+<!-- Ownership -->
+<div class="card p-4 mb-4">
+<div class="d-flex justify-content-between">
+<h5 class="section-title">Ownership</h5>
+<span class="badge-title">STEP 2</span>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6">
+<select class="form-select">
+<option>Single Ownership</option>
+<option>Multiple Ownership</option>
+</select>
+</div>
+<div class="col-md-6"><input class="form-control" placeholder="Properties Count"></div>
+<div class="col-md-12"><input class="form-control" placeholder="Ownership Proof URL"></div>
+</div>
+</div>
+
+<!-- Vendors -->
+<div class="card p-4 mb-4">
+<div class="d-flex justify-content-between">
+<h5 class="section-title">Vendor Management</h5>
+<span class="badge-title">STEP 3</span>
+</div>
+
+<select class="form-select mb-3">
+<option>Self Managed</option>
+<option>Vendor Managed</option>
+</select>
+
+<div id="vendorContainer"></div>
+
+<button type="button" class="btn btn-outline-primary add-btn mt-2" onclick="addVendor()">+ Add Vendor</button>
+</div>
+
+<!-- Room Based -->
+<div class="card p-4 mb-4">
+<div class="d-flex justify-content-between">
+<h5 class="section-title">Room Based Properties</h5>
+<span class="badge-title">STEP 4</span>
+</div>
+
+<input class="form-control mb-3" placeholder="Property Name">
+<input class="form-control mb-3" placeholder="Type (Hotel/Hostel/Capsule)">
+
+<div id="roomContainer"></div>
+
+<button type="button" class="btn btn-outline-primary add-btn" onclick="addRoom()">+ Add Room</button>
+</div>
+
+<!-- Product Based -->
+<div class="card p-4 mb-4">
+<div class="d-flex justify-content-between">
+<h5 class="section-title">Product Based Properties</h5>
+<span class="badge-title">STEP 5</span>
+</div>
+
+<div class="row g-3">
+<div class="col-md-6"><input class="form-control" placeholder="Property Name"></div>
+<div class="col-md-6"><input class="form-control" placeholder="Type"></div>
+<div class="col-md-4"><input class="form-control" placeholder="Price"></div>
+<div class="col-md-4"><input class="form-control" placeholder="Guests"></div>
+<div class="col-md-4"><input class="form-control" placeholder="Bedrooms"></div>
+</div>
+</div>
+
+<button class="btn btn-primary w-100">Submit Setup</button>
+
+</form>
+</div>
+
+<script>
+function addVendor() {
+  let div = document.createElement('div');
+  div.classList = 'border p-3 rounded mb-2';
+  div.innerHTML = `
+  <div class="row g-2">
+  <div class="col-md-3"><input class="form-control" placeholder="Name"></div>
+  <div class="col-md-3"><input class="form-control" placeholder="Email"></div>
+  <div class="col-md-3"><input class="form-control" placeholder="Phone"></div>
+  <div class="col-md-3"><input class="form-control" placeholder="Commission %"></div>
+  </div>`;
+  document.getElementById('vendorContainer').appendChild(div);
+}
+
+function addRoom() {
+  let div = document.createElement('div');
+  div.classList = 'border p-3 rounded mb-2';
+  div.innerHTML = `
+  <div class="row g-2">
+  <div class="col-md-3"><input class="form-control" placeholder="Room Type"></div>
+  <div class="col-md-3"><input class="form-control" placeholder="Price"></div>
+  <div class="col-md-3"><input class="form-control" placeholder="Adults"></div>
+  <div class="col-md-3"><input class="form-control" placeholder="Children"></div>
+  </div>`;
+  document.getElementById('roomContainer').appendChild(div);
+}
+</script>
+
+</body>
+</html>

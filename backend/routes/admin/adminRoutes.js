@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken } = require("../../middleware/admin/auth"); // JWT middleware
+const { checkRole } = require("../../middleware/admin/role");
 const { getAdmins, 
     toggleAdminStatus , 
     deleteAdmin, 

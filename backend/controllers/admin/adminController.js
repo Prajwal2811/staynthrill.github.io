@@ -116,37 +116,42 @@ exports.updateAdmin = async (req, res) => {
   }
 };
 
-
-// ✅ Create new admin and send credentials via email
 exports.createAdmin = async (req, res) => {
   try {
     const { firstName, lastName, email, phoneNumber, role, password, note } = req.body;
 
-    // Check required fields
+    // Validation
     if (!firstName || !email || !role || !password) {
-      return res.status(400).json({ message: "First name, email, role, and password are required" });
+      return res.status(400).json({
+        message: "First name, email, role, and password are required",
+      });
     }
 
-    // Check if admin with email already exists
+    // Check duplicate email
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
-      return res.status(400).json({ message: "Admin with this email already exists" });
+      return res.status(400).json({
+        message: "Admin with this email already exists",
+      });
     }
 
-    // Generate adminId
-    let lastAdmin = await Admin.findOne().sort({ createdAt: -1 });
+    // ✅ FIXED: Get last adminId properly
+    const lastAdmin = await Admin.findOne({}, {}, { sort: { adminId: -1 } });
+
     let nextNumber = 1;
+
     if (lastAdmin && lastAdmin.adminId) {
-      const lastNumber = parseInt(lastAdmin.adminId.replace("ADM", ""));
+      const lastNumber = parseInt(lastAdmin.adminId.replace("ADM", ""), 10);
       nextNumber = lastNumber + 1;
     }
-    const adminId = "ADM" + nextNumber.toString().padStart(3, "0");
+
+    const adminId = `ADM${String(nextNumber).padStart(3, "0")}`;
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new admin
+    // Create admin
     const newAdmin = new Admin({
       adminId,
       firstName,
@@ -161,110 +166,101 @@ exports.createAdmin = async (req, res) => {
 
     await newAdmin.save();
 
-    // --- Email Setup ---
-    // Replace with your SMTP settings
+    // Email setup
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT),
-      secure: process.env.SMTP_SECURE === "true", // false for 587
+      secure: process.env.SMTP_SECURE === "true",
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
 
-    // Email content
-    const mailOptions = {
+      const mailOptions = {
       from: `"Admin Support" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Your Admin Account Has Been Created",
       html: `
-      <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
-        <table align="center" width="600" style="background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-          
-          <!-- Header -->
-          <tr>
-            <td style="background: #4f46e5; color: #ffffff; padding: 20px; text-align: center;">
-              <h2 style="margin: 0;">Admin Account Created</h2>
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding: 30px; color: #333;">
-              <p style="font-size: 16px;">Hello <strong>${firstName}</strong>,</p>
-
-              <p style="font-size: 14px; line-height: 1.6;">
-                Your admin account has been successfully created. Below are your login credentials:
-              </p>
-
-              <!-- Credentials Box -->
-              <table width="100%" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin: 20px 0;">
-                <tr>
-                  <td style="padding: 8px 0;"><strong>Admin ID:</strong></td>
-                  <td style="padding: 8px 0;">${adminId}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0;"><strong>Email:</strong></td>
-                  <td style="padding: 8px 0;">${email}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 0;"><strong>Password:</strong></td>
-                  <td style="padding: 8px 0;">${password}</td>
-                </tr>
-              </table>
-
-              <p style="font-size: 14px; line-height: 1.6;">
-                For security reasons, we strongly recommend changing your password after your first login.
-              </p>
-
-              <!-- Button -->
-              <div style="text-align: center; margin: 25px 0;">
-                <a href="#" style="background: #4f46e5; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 14px;">
-                  Login to Your Account
-                </a>
-              </div>
-
-              <p style="font-size: 14px;">If you did not request this account, please contact support immediately.</p>
-
-              <p style="margin-top: 30px; font-size: 14px;">
-                Regards,<br>
-                <strong>StayNThrill Admin Team</strong>
-              </p>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="background: #f4f6f8; text-align: center; padding: 15px; font-size: 12px; color: #888;">
-              © ${new Date().getFullYear()} Your Company. All rights reserved.
-            </td>
-          </tr>
-
-        </table>
-      </div>
-      `,
+        <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+          <table align="center" width="600" style="background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <tr>
+              <td style="background: #4f46e5; color: #ffffff; padding: 20px; text-align: center;">
+                <h2 style="margin: 0;">Admin Account Created</h2>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 30px; color: #333;">
+                <p style="font-size: 16px;">Hello <strong>${firstName}</strong>,</p>
+                <p style="font-size: 14px; line-height: 1.6;">
+                  Your admin account has been successfully created. Below are your login credentials:
+                </p>
+                <table width="100%" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin: 20px 0;">
+                  <tr>
+                    <td style="padding: 8px 0;"><strong>Admin ID:</strong></td>
+                    <td style="padding: 8px 0;">${adminId}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;"><strong>Email:</strong></td>
+                    <td style="padding: 8px 0;">${email}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;"><strong>Password:</strong></td>
+                    <td style="padding: 8px 0;">${password}</td>
+                  </tr>
+                </table>
+                <p style="font-size: 14px; line-height: 1.6;">
+                  For security reasons, we strongly recommend changing your password after your first login.
+                </p>
+                <div style="text-align: center; margin: 25px 0;">
+                  <a href="#" style="background: #4f46e5; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 14px;">
+                    Login to Your Account
+                  </a>
+                </div>
+                <p style="font-size: 14px;">If you did not request this account, please contact support immediately.</p>
+                <p style="margin-top: 30px; font-size: 14px;">
+                  Regards,<br>
+                  <strong>StayNThrill Admin Team</strong>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #f4f6f8; text-align: center; padding: 15px; font-size: 12px; color: #888;">
+                © ${new Date().getFullYear()} Your Company. All rights reserved.
+              </td>
+            </tr>
+          </table>
+        </div>
+        `,
     };
 
-    // Send email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error("Email sending error:", error);
-        // You can still respond success even if email fails
         return res.status(201).json({
-          message: "Admin created, but failed to send email",
+          message: "Admin created, but email failed",
           admin: newAdmin,
         });
       }
-      console.log("Email sent:", info.response);
-      res.status(201).json({ message: "Admin created successfully, email sent", admin: newAdmin });
+
+      res.status(201).json({
+        message: "Admin created successfully",
+        admin: newAdmin,
+      });
     });
+
   } catch (err) {
     console.error("Create Admin Error:", err);
+
+    // ✅ Handle duplicate adminId safely
+    if (err.code === 11000 && err.keyPattern?.adminId) {
+      return res.status(400).json({
+        message: "Duplicate Admin ID detected, please try again",
+      });
+    }
+
     res.status(500).json({ message: "Server Error" });
   }
 };
-
 
 
 

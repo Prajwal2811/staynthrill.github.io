@@ -62,4 +62,4 @@ const adventureSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model("Adventure", adventureSchema);
+module.exports = mongoose.model("Adventure", adventureSchema, "staynthrill_adventures");

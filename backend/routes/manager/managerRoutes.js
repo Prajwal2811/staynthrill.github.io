@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken } = require("../../middleware/client/auth"); // JWT middleware
-const { signupUser, updateProfile, forgotPassword, resetPassword } = require("../../controllers/client/clientController");
-const { checkRole } = require("../../middleware/client/role");
+const { verifyToken } = require("../../middleware/manager/auth"); // JWT middleware
+const { signupManager, updateProfile, forgotPassword, resetPassword } = require("../../controllers/manager/managerController");
+const { checkRole } = require("../../middleware/manager/role");
 
 
 // User authentication routes
-router.post("/signup", signupUser);
+router.post("/signup", signupManager);
+
 
 // Profile update
 router.put("/update-profile", verifyToken, updateProfile);

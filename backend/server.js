@@ -32,7 +32,10 @@ app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
-app.use("/api/auth/user", require("./routes/client/clientRoutes.js"));
+app.use("/api/auth/user", require("./routes/client/authRoutes.js"));
+app.use("/api/user", require("./routes/client/clientRoutes.js"));
+app.use("/api/auth/manager", require("./routes/manager/authRoutes.js"));
+app.use("/api/manager", require("./routes/manager/managerRoutes.js"));
 
 
 app.use("/api/auth", require("./routes/admin/authRoutes"));

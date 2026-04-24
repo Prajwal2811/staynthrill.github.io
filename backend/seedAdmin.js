@@ -62,6 +62,18 @@ const seedAdmins = async () => {
         is_delete: false,
         note: "Customer support",
       },
+      {
+        adminId: "ADM005",
+        firstName: "Devshri",
+        lastName: "B",
+        email: "devshri@gmail.com",
+        phoneNumber: "9876543278",
+        password: hashedPassword,
+        role: "support_admin",
+        status: "active",
+        is_delete: false,
+        note: "Customer support",
+      },
     ]);
 
     console.log("Admins Seeded Successfully");

@@ -35,13 +35,27 @@ const seedUsers = async () => {
     ];
 
     // ✅ Add extra fields
-    const usersWithExtras = users.map(u => ({
+    const maleImages = [
+      "https://randomuser.me/api/portraits/men/1.jpg",
+      "https://randomuser.me/api/portraits/men/2.jpg",
+    ];
+
+    const femaleImages = [
+      "https://randomuser.me/api/portraits/women/1.jpg",
+      "https://randomuser.me/api/portraits/women/2.jpg",
+    ];
+
+    const usersWithExtras = users.map((u) => ({
       ...u,
       password: hashedPassword,
       review_status: getRandomStatus(),
       admin_review_comment: "",
 
-      // ✅ IMPORTANT (OTP fields)
+      profileImage:
+        u.firstName === "Sneha" || u.firstName === "Priya" || u.firstName === "Neha" || u.firstName === "Riya"
+          ? femaleImages[Math.floor(Math.random() * femaleImages.length)]
+          : maleImages[Math.floor(Math.random() * maleImages.length)],
+
       resetPasswordToken: null,
       resetPasswordExpires: null,
     }));

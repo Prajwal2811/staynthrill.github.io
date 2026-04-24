@@ -5,7 +5,6 @@ const vendorSchema = new mongoose.Schema(
     vendorId: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
 
@@ -58,12 +57,43 @@ const vendorSchema = new mongoose.Schema(
       required: true,
     },
 
-    // 🔥 RELATION FIELD (MOST IMPORTANT)
+    // 🔥 RELATION FIELD (Manager)
     manager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Manager",
       required: true,
     },
+
+    // ✅ ADD THESE (IMPORTANT FOR YOUR LOGIC)
+
+    propertyType: {
+      type: String,
+      enum: ["single_property_owner", "multiple_property_owner"],
+      required: true,
+    },
+
+    engineTypes: [
+      {
+        type: String,
+        enum: ["room", "product"],
+      },
+    ],
+
+    propertyCategories: [
+      {
+        type: String,
+        enum: [
+          "Hotel",
+          "Resort",
+          "Hostel/Dorm",
+          "Capsule",
+          "Villa",
+          "Farmhouse",
+          "Apartment",
+          "Cottage",
+        ],
+      },
+    ],
 
     status: {
       type: String,
@@ -97,4 +127,4 @@ const vendorSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Vendor", vendorSchema);
+module.exports = mongoose.model("Vendor", vendorSchema, "staynthrill_vendors");

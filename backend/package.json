@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed:all": "node seedAdmin.js && node seedUsers.js && node seedManagers.js && node seedVendors.js && node seedReviews.js && node seedHotels.js && node seedRooms.js && node seedBookings.js && node seedPayment.js"
+    "seed:all": "node seedAdmin.js && node seedUsers.js && node seedManagers.js && node seedVendors.js && node seedReviews.js && node seedBookings.js && node seedProperties.js && node seedPropertyInventory.js && node seedInventoryImages.js"
   },
   "keywords": [],
   "author": "",

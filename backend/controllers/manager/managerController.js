@@ -2,76 +2,70 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const User = require("../../models/user/User");
-
-
-
-
+const Manager = require("../../models/manager/Manager");
 
 
 
 // Signup for clients
-exports.signupUser = async (req, res) => {
+exports.signupManager = async (req, res) => {
   try {
     const {
       firstName,
       lastName,
       email,
       phoneNumber,
-      password
+      password,
+      propertyType,
+      gstNumber
     } = req.body;
 
-    // ✅ 1. Validate
-    if (!firstName || !lastName || !email || !phoneNumber || !password) {
+    if (!firstName || !lastName || !email || !phoneNumber || !password || !propertyType || !gstNumber) {
       return res.status(400).json({
         message: "All fields are required",
       });
     }
 
-    // ✅ 2. Check existing email
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingManager = await Manager.findOne({ email });
+    if (existingManager) {
       return res.status(409).json({
         message: "Email already registered",
       });
     }
 
-    // ✅ 3. Check existing phone
-    const existingPhone = await User.findOne({ phoneNumber });
+    const existingPhone = await Manager.findOne({ phoneNumber });
     if (existingPhone) {
       return res.status(409).json({
         message: "Phone number already registered",
       });
     }
 
-    // ✅ 4. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ 5. Generate userId (simple auto)
-    const count = await User.countDocuments();
-    const userId = `USR${String(count + 1).padStart(3, "0")}`;
+    const count = await Manager.countDocuments();
+    const managerId = `MAN${String(count + 1).padStart(3, "0")}`;
 
-    // ✅ 6. Create user
-    const newUser = await User.create({
-      userId,
+    const newManager = await Manager.create({
+      managerId,
       firstName,
       lastName,
       email,
       phoneNumber,
+      propertyType,
+      gstNumber,
       password: hashedPassword,
       status: "active",
-      is_deleted: false,
-      review_status: "pending", // 👈 important (admin approval)
+      is_delete: false,
+
+      review_status: "pending",
       admin_review_comment: "",
     });
 
-    // ✅ 7. Response
     res.status(201).json({
       message: "Signup successful",
-      user: {
-        userId: newUser.userId,
-        name: `${newUser.firstName} ${newUser.lastName}`,
-        email: newUser.email,
+      manager: {
+        managerId: newManager.managerId,
+        name: `${newManager.firstName} ${newManager.lastName}`,
+        email: newManager.email,
       },
     });
 
@@ -87,61 +81,86 @@ exports.signupUser = async (req, res) => {
 // Profile update for clients
 exports.updateProfile = async (req, res) => {
   try {
-    const userId = req.user.id; // from JWT middleware
+    const managerId = req.manager.id; // from JWT
 
     const {
       firstName,
       lastName,
       email,
-      phoneNumber
+      phoneNumber,
+      propertyType,
+      gstNumber
     } = req.body;
 
-  
-    const user = await User.findById(userId);
-    if (!user) {
+    // ✅ 1. Find manager
+    const manager = await Manager.findById(managerId);
+    if (!manager) {
       return res.status(404).json({
-        message: "User not found",
+        message: "Manager not found",
       });
     }
 
-
-    if (email && email !== user.email) {
-      const existingEmail = await User.findOne({ email });
+    // ✅ 2. Email check
+    if (email && email !== manager.email) {
+      const existingEmail = await Manager.findOne({ email });
       if (existingEmail) {
         return res.status(409).json({
           message: "Email already in use",
         });
       }
-      user.email = email;
+      manager.email = email;
     }
 
- 
-    if (phoneNumber && phoneNumber !== user.phoneNumber) {
-      const existingPhone = await User.findOne({ phoneNumber });
+    // ✅ 3. Phone check
+    if (phoneNumber && phoneNumber !== manager.phoneNumber) {
+      const existingPhone = await Manager.findOne({ phoneNumber });
       if (existingPhone) {
         return res.status(409).json({
           message: "Phone number already in use",
         });
       }
-      user.phoneNumber = phoneNumber;
+      manager.phoneNumber = phoneNumber;
     }
 
-   
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
+    // ✅ 4. Update basic fields
+    if (firstName) manager.firstName = firstName;
+    if (lastName) manager.lastName = lastName;
 
+    // ✅ 5. Update extra fields (from seeder)
+    if (propertyType) {
+      const allowedTypes = ["single_property_owner", "multiple_property_owner"];
+      if (!allowedTypes.includes(propertyType)) {
+        return res.status(400).json({
+          message: "Invalid property type",
+        });
+      }
+      manager.propertyType = propertyType;
+    }
 
+    if (gstNumber) {
+      manager.gstNumber = gstNumber;
+    }
 
-    await user.save();
+    // ⚠️ Optional: If critical fields changed → reset approval
+    if (propertyType || gstNumber) {
+      manager.review_status = "pending";
+      manager.admin_review_comment = "";
+    }
 
-   
+    // ✅ 6. Save
+    await manager.save();
+
+    // ✅ 7. Response
     res.status(200).json({
       message: "Profile updated successfully",
-      user: {
-        userId: user.userId,
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
+      manager: {
+        managerId: manager.managerId,
+        name: `${manager.firstName} ${manager.lastName}`,
+        email: manager.email,
+        phoneNumber: manager.phoneNumber,
+        propertyType: manager.propertyType,
+        gstNumber: manager.gstNumber,
+        review_status: manager.review_status,
       },
     });
 
@@ -160,32 +179,26 @@ exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // ✅ 1. Validate
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
 
-    // ✅ 2. Check user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const manager = await Manager.findOne({ email });
+    if (!manager) {
+      return res.status(404).json({ message: "Manager not found" });
     }
 
-    // ✅ 3. Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // ✅ 4. Hash OTP
     const hashedOtp = crypto
       .createHash("sha256")
       .update(otp)
       .digest("hex");
 
-    // ✅ 5. Save OTP + expiry
-    user.resetPasswordToken = hashedOtp;
-    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 min
-    await user.save();
+    manager.resetPasswordToken = hashedOtp;
+    manager.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 min
+    await manager.save();
 
-    // ✅ 6. Email transporter
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT),
@@ -213,7 +226,7 @@ exports.forgotPassword = async (req, res) => {
             <!-- Body -->
             <tr>
               <td style="padding: 30px; color: #333;">
-                <p style="font-size: 16px;">Hello <strong>${user.firstName}</strong>,</p>
+                <p style="font-size: 16px;">Hello <strong>${manager.firstName}</strong>,</p>
 
                 <p style="font-size: 14px; line-height: 1.6;">
                   We received a request to reset your password.
@@ -256,15 +269,13 @@ exports.forgotPassword = async (req, res) => {
         </div>
       `;
 
-    // ✅ 8. Send email
     await transporter.sendMail({
       from: `"StayNThrill" <${process.env.SMTP_USER}>`,
-      to: user.email,
+      to: manager.email,
       subject,
       html,
     });
 
-    // ✅ 9. Response
     res.status(200).json({
       message: "OTP sent to your email",
     });
@@ -281,7 +292,6 @@ exports.resetPassword = async (req, res) => {
   try {
     const { email, otp, newPassword, confirmPassword } = req.body;
 
-    // ✅ 1. Validate input
     if (!email || !otp || !newPassword || !confirmPassword) {
       return res.status(400).json({
         message: "All fields are required",
@@ -294,36 +304,31 @@ exports.resetPassword = async (req, res) => {
       });
     }
 
-    // ✅ 2. Hash OTP
     const hashedOtp = crypto
       .createHash("sha256")
       .update(otp)
       .digest("hex");
 
-    // ✅ 3. Find user with valid OTP
-    const user = await User.findOne({
+    const manager = await Manager.findOne({
       email,
       resetPasswordToken: hashedOtp,
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    if (!user) {
+    if (!manager) {
       return res.status(400).json({
         message: "Invalid or expired OTP",
       });
     }
 
-    // ✅ 4. Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+    manager.password = hashedPassword;
 
-    // ✅ 5. Clear OTP fields
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    manager.resetPasswordToken = undefined;
+    manager.resetPasswordExpires = undefined;
 
-    await user.save();
+    await manager.save();
 
-    // ✅ 6. Setup mail transporter
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT),
@@ -351,7 +356,7 @@ exports.resetPassword = async (req, res) => {
           <!-- Body -->
           <tr>
             <td style="padding: 30px; color: #333;">
-              <p style="font-size: 16px;">Hello <strong>${user.firstName}</strong>,</p>
+              <p style="font-size: 16px;">Hello <strong>${manager.firstName}</strong>,</p>
 
               <p style="font-size: 14px; line-height: 1.6;">
                 Your password has been successfully changed.
@@ -383,15 +388,13 @@ exports.resetPassword = async (req, res) => {
       </div>
     `;
 
-    // ✅ 8. Send email
     await transporter.sendMail({
       from: `"StayNThrill" <${process.env.SMTP_USER}>`,
-      to: user.email,
+      to: manager.email,
       subject,
       html,
     });
 
-    // ✅ 9. Final response
     res.status(200).json({
       message: "Password reset successful & email sent",
     });

@@ -23,4 +23,4 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Review", reviewSchema);
+module.exports = mongoose.model("Review", reviewSchema, "staynthrill_reviews");

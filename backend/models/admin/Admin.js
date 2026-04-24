@@ -20,4 +20,4 @@ const adminSchema = new mongoose.Schema({
   is_delete: { type: Boolean, default: false },
 }, { timestamps: true });
 
-module.exports = mongoose.model("Admin", adminSchema);
+module.exports = mongoose.model("Admin", adminSchema, "staynthrill_admins");

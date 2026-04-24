@@ -44,4 +44,4 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Booking", bookingSchema);
+module.exports = mongoose.model("Booking", bookingSchema, "staynthrill_bookings");

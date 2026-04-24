@@ -9,17 +9,27 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true },
     password: { type: String, required: true },
 
-    // ✅ ADD THESE FIELDS
+    // ✅ Profile Image Field
+    profileImage: {
+      type: String,
+      default: "https://i.pravatar.cc/150?img=1", // default avatar
+    },
+
+    // ✅ Reset Password
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
 
     status: { type: String, enum: ["active", "inactive"], default: "active" },
     is_deleted: { type: Boolean, default: false },
     note: { type: String, default: "" },
-    review_status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
-    admin_review_comment: { type: String, default: "" }
+    review_status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    admin_review_comment: { type: String, default: "" },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema, "staynthrill_users"); 
